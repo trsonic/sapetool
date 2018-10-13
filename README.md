@@ -2,7 +2,7 @@
 A DAW-based interactive tool for perceptual spatial audio evaluation
 
 
-##Key features
+## Key features
 
 - Multichannel playback of the listening test stimuli
 - Flexible signal processing – each sample can have its own designated decoder
@@ -12,13 +12,13 @@ A DAW-based interactive tool for perceptual spatial audio evaluation
 - Straightforward test preparation done by setting up the DAW session
 - MUSHRA and Method of Adjustment implemented
 
-##Implementation
+## Implementation
 
 - Created in C++ utilizing JUCE framework
 - Networked communication done by Open Sound Control messages
 - Method of Adjustment interface based on Arduino and rotary encoders
 
-##Usage
+## Usage
 
 - Import test audio samples to Reaper.
 - Set up the required signal processing chain.
