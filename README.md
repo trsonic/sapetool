@@ -2,6 +2,8 @@
 
 This repository contains a source code of the tool created for the purpose of perceptual evaluation of Ambisonic recordings encoded with Opus codec at different orders and bit rates. If you would like to use the tool for your research, please contact me (tr837 (at) york.ac.uk) and I will be happy to assist with setting up the system.
 
+![alt text](https://github.com/trsonic/sapetool/blob/master/2018_AESNY_SAPETool_POSTER.jpg "145th AES Convention poster")
+
 The software has been described in the 145th AES Convention [Engineering Brief 465](http://www.aes.org/e-lib/browse.cfm?elib=19730).
 
 ## Applications
