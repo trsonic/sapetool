@@ -14,10 +14,10 @@ Perceptual evaluation of: spatial audio codecs, binaural rendering engines, virt
 - The app can be run on macOS and Windows
 - Mobile participant’s interface (iOS and Android)
 - Straightforward test preparation done by setting up the DAW session
-- MUSHRA and Method of Adjustment implemented
+- MUSHRA [1] and Method of Adjustment [2] implemented
 
 ## Implementation
-- Created in C++ utilizing JUCE framework
+- Created in C++ utilizing JUCE framework [3]
 - Networked communication done by Open Sound Control messages
 - Method of Adjustment interface based on Arduino and rotary encoders
 
@@ -28,3 +28,11 @@ Perceptual evaluation of: spatial audio codecs, binaural rendering engines, virt
 - Configuration of the listening test app will be done automatically based on the DAW session structure.
 - Launch the mobile user interface app.
 - Conduct the test and save the results into a text file.
+
+**References**
+
+[1] *ITU-R, “BS.1534-3: Method for the subjective assessment of intermediate quality levels of coding systems,” 2015.*
+
+[2] *Thresh, L., Armstrong, C., and Kearney, G., “A Direct Comparison of Localization Performance When Using First, Third, and Fifth Ambisonics Order for Real Loudspeaker and Virtual Loudspeaker Rendering,” in Audio Engineering Society Convention 143, Audio Engineering Society, 2017.*
+
+[3] *juce.com, github.com/WeAreROLI/JUCE/*
