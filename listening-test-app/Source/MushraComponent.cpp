@@ -22,7 +22,7 @@ void MushraComponent::paint (Graphics& g)
 
     g.setFont (Font (16.0f));
     g.setColour (Colours::black);
-	g.drawText("MUSHRA Test Mode", 25, 25, 200, 25, Justification::centredLeft, true);
+	g.drawText(testTypeText, 25, 10, getWidth() - 25, 30, Justification::centred, true);
 	g.setFont(Font(14.0f));
     g.drawText("Trial: " + String(currentTrialIndex + 1) + " of " + String(regionArray.size()), 390, 680, 200, 20, Justification::centredLeft, true);
 	g.drawText("Region: " + String(currentRegion + 1) + " of " + String(regionArray.size()), 390, 700, 200, 20, Justification::centredLeft, true);
@@ -37,12 +37,12 @@ void MushraComponent::paint (Graphics& g)
 	int linesEndY = 0.66 * getHeight();
 	int linesYinterval = (linesEndY - linesStartY) / 5;
 
-	Line<float> line1(Point<float>(linesStartX, linesStartY), Point<float>(linesEndX, linesStartY));
+	//Line<float> line1(Point<float>(linesStartX, linesStartY), Point<float>(linesEndX, linesStartY));
 	Line<float> line2(Point<float>(linesStartX, linesStartY + linesYinterval * 1), Point<float>(linesEndX, linesStartY + linesYinterval * 1));
 	Line<float> line3(Point<float>(linesStartX, linesStartY + linesYinterval * 2), Point<float>(linesEndX, linesStartY + linesYinterval * 2));
 	Line<float> line4(Point<float>(linesStartX, linesStartY + linesYinterval * 3), Point<float>(linesEndX, linesStartY + linesYinterval * 3));
 	Line<float> line5(Point<float>(linesStartX, linesStartY + linesYinterval * 4), Point<float>(linesEndX, linesStartY + linesYinterval * 4));
-	Line<float> line6(Point<float>(linesStartX, linesEndY), Point<float>(linesEndX, linesEndY));
+	//Line<float> line6(Point<float>(linesStartX, linesEndY), Point<float>(linesEndX, linesEndY));
 
 	float dashPattern[2];
 	dashPattern[0] = 4.0;
@@ -56,14 +56,14 @@ void MushraComponent::paint (Graphics& g)
 	g.drawDashedLine(line5, dashPattern, 2, 1.0f);
 	//g.drawDashedLine(line6, dashPattern, 2, 1.0f);
 
-	int textStartX = linesStartX - 60;
-	int textWidth = 80;
-	g.drawText("Excellent", textStartX, linesStartY, textWidth, linesYinterval, Justification::centredRight, true);
-	g.drawText("Good", textStartX, linesStartY + linesYinterval * 1, textWidth, linesYinterval, Justification::centredRight, true);
-	g.drawText("Fair", textStartX, linesStartY + linesYinterval * 2, textWidth, linesYinterval, Justification::centredRight, true);
-	g.drawText("Poor", textStartX, linesStartY + linesYinterval * 3, textWidth, linesYinterval, Justification::centredRight, true);
-	g.drawText("Bad", textStartX, linesStartY + linesYinterval * 4, textWidth, linesYinterval, Justification::centredRight, true);
+	int textStartX = linesStartX - 160;
+	int textWidth = 200;
 
+	for (auto label : ratingScaleLabels)
+	{
+		g.drawText(label, textStartX, linesStartY, textWidth, linesYinterval, Justification::centredRight, true);
+		linesStartY += linesYinterval;
+	}
 }
 
 void MushraComponent::createGui()
@@ -168,25 +168,17 @@ void MushraComponent::createGui()
 	addAndMakeVisible(sampleTimeLabel);
 
 	updateTransportSlider(true);
-	updateClientTransportSlider();
-	updateClientRatingSliders();
 
 	resized();
 }
 
-void MushraComponent::connectOsc(String dawIp, String clientIp, int dawTxPort, int dawRxPort, int clientTxPort, int clientRxPort)
+void MushraComponent::connectOsc(String dawIp, int dawTxPort, int dawRxPort)
 {
 	// DAW
 	dawTx.connectSender(dawIp, dawTxPort);
 	dawRx.connectReceiver(dawRxPort);
 	dawRx.addListener(this);
 
-	// CLIENT
-	clientTx.connectSender(clientIp, clientTxPort);
-	clientRx.connectReceiver(clientRxPort);
-	clientRx.addListener(this);
-
-	clientRxPortAtHost = clientRxPort;
 
 	// DAW state
 	stopPlayback();
@@ -263,9 +255,7 @@ void MushraComponent::buttonClicked (Button* buttonThatWasClicked)
 			currentRegion = trialRandomizationArray[currentTrialIndex];
             stopPlayback();
             updateTransportSlider(true);
-			updateClientTransportSlider();
 			updateRatingSliders();
-			updateClientRatingSliders();
         }
 
 	}
@@ -277,9 +267,7 @@ void MushraComponent::buttonClicked (Button* buttonThatWasClicked)
 			currentRegion = trialRandomizationArray[currentTrialIndex];
 			stopPlayback();
             updateTransportSlider(true);
-			updateClientTransportSlider();
             updateRatingSliders();
-			updateClientRatingSliders();
         }
 	}
 	repaint();
@@ -307,7 +295,6 @@ void MushraComponent::sliderValueChanged(Slider *sliderThatWasChanged)
 		regionArray[currentRegion]->loopStartOffset = loopSlider.getMinValue();
 		regionArray[currentRegion]->loopEndOffset = regionLength - loopSlider.getMaxValue();
 		regionArray[currentRegion]->calculateStartEndTimes();
-		updateClientTransportSlider();
 	}
 }
 
@@ -354,7 +341,6 @@ void MushraComponent::oscMessageReceived(const OSCMessage& message)
     {
         currentPosition = message[0].getFloat32();
         updateTransportSlider(false);
-		updateClientTransportSlider();
         
         dawTimeLabel.setText("DAW Time: " + String(currentPosition, 3), NotificationType::dontSendNotification);
 		sampleTimeLabel.setText("Sample Time: " + String(currentPosition - regionArray[currentRegion]->startTime, 3), NotificationType::dontSendNotification);
@@ -410,32 +396,6 @@ void MushraComponent::updateTransportSlider(bool updateLoop)
 	}
 }
 
-void MushraComponent::initClientGui()
-{
-	clientTx.sendOscMessage("/client/hostip", hostIp);
-	clientTx.sendOscMessage("/client/hostport", clientRxPortAtHost);
-	clientTx.sendOscMessage("/client/nofsamples", numberOfSamplesPerRegion);
-	clientTx.sendOscMessage("/client/currenttrial/", (int)currentTrialIndex, (int)regionArray.size());
-	clientTx.sendOscMessage("/client/isrefbutton", 1);
-	clientTx.sendOscMessage("/client/gui", "create");
-
-}
-
-void MushraComponent::updateClientTransportSlider()
-{
-	float regionLength = regionArray[currentRegion]->getRegionLength();
-	clientTx.sendOscMessage("/client/loopslider/", regionLength, currentPosition - regionArray[currentRegion]->dawStartTime, regionArray[currentRegion]->loopStartOffset, regionLength - regionArray[currentRegion]->loopEndOffset);
-}
-
-void MushraComponent::updateClientRatingSliders()
-{
-	for (int sliderIndex = 0; sliderIndex < rateSampleSliderArray.size(); ++sliderIndex)
-	{
-		clientTx.sendOscMessage("/client/slider/", (int)sliderIndex, (float)rateSampleSliderArray[sliderIndex]->getValue());
-	}
-	clientTx.sendOscMessage("/client/currenttrial/", (int)currentTrialIndex, (int)regionArray.size());
-}
-
 void MushraComponent::updateRatingSliders()
 {
 	for (int i = 0; i < numberOfSamplesPerRegion; ++i)
@@ -450,14 +410,17 @@ void MushraComponent::saveResults()
 	File chosenFile;
 	String dataToSave;
 
-#if JUCE_MODAL_LOOPS_PERMITTED
 	FileChooser fc("Choose a file to save...", File::getCurrentWorkingDirectory(),
 		"*.txt", true);
+
+#if JUCE_MODAL_LOOPS_PERMITTED
 	if (fc.browseForFileToSave(true))
 	{
 		chosenFile = fc.getResult().withFileExtension(".txt");
 
-		dataToSave = String("##### RAW RESULTS #####\n\n");
+		dataToSave = String("Test Type: ") + testTypeText + String("\n\n");
+
+		dataToSave += String("##### RAW RESULTS #####\n\n");
 		for (int i = 0; i < scoresArray.size(); i++)
 		{
 			for (int j = 0; j < scoresArray[0].size(); j++)
@@ -482,7 +445,7 @@ void MushraComponent::saveResults()
 			for (int j = 0; j < scoresArray[0].size(); j++)
 			{
 				dataToSave += String(sampleRandomizationArray[i][j]);
-				dataToSave += "\t";
+				dataToSave += ",";
 			}
 			dataToSave += "\n";
 		}

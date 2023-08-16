@@ -23,6 +23,33 @@ public:
 	void paint(Graphics&) override;
 	void resized() override;
 
+	enum TestType {
+		standardMushra, externalisation, degreeOfLiking
+	};
+
+	void setupRatingLabels(TestType type)
+	{
+		testType = type;
+		switch (type)
+		{
+		case MushraComponent::standardMushra:
+			testTypeText = "Standard MUSHRA Test";
+			ratingScaleLabels = { "Excellent", "Good", "Fair", "Poor", "Bad" };
+			break;
+		case MushraComponent::externalisation:
+			testTypeText = "Externalisation: Rate how you perceive the sound sources, whether they seem to be coming from within your head or outside of it.";
+			ratingScaleLabels = { "More Externalized", "Externalized", "Indistinct", "Internalized", "More Internalized" };
+			break;
+		case MushraComponent::degreeOfLiking:
+			testTypeText = "Degree of Liking: Rate how much you like or dislike the scene based on its overall pleasantness or unpleasantness.";
+			ratingScaleLabels = { "Strongly Like", "Like", "Neutral", "Dislike", "Strongly Dislike" };
+			break;
+		default:
+			break;
+		}
+		repaint();
+	};
+
 	OwnedArray<SampleRegion> regionArray;
 	vector<vector<float>> scoresArray;
 	vector<int> trialRandomizationArray;
@@ -30,20 +57,20 @@ public:
 	Array<String> trackNameArray;
 	bool randomizeSamples = true;
 	int numberOfSamplesPerRegion;
+
 	String hostIp;
-	int clientRxPortAtHost;
+
+
 	void createGui();
-	void connectOsc(String dawIp, String clientIp, int dawTxPort, int dawRxPort, int clientTxPort, int clientRxPort);
-	void initClientGui();
+	void connectOsc(String dawIp, int dawTxPort, int dawRxPort);
 	void saveResults();
 
 private:
 	oscTransceiver dawTx, dawRx;
-	oscTransceiver clientTx, clientRx;
 
 	// APP CONFIG
-	bool isReferenceButtonVisible = true;
-
+	TestType testType = standardMushra;
+	bool isReferenceButtonVisible = false;
 
 	// APP STATE
 	int currentRegion = 0, currentTrack = 0;
@@ -52,6 +79,10 @@ private:
 	bool playback = false;
 	bool loop = true;
 	Label dawTimeLabel, sampleTimeLabel;
+
+	// test type specific text
+	String testTypeText;
+	StringArray ratingScaleLabels;
 
 	// MUSHRA CONTROLS
 	TextButton playReference;
@@ -64,6 +95,8 @@ private:
 	ToggleButton loopTB;
 	
 	// METHODS
+
+
 	void playSample(int track, bool randomize);
 	void playSampleLoop();
 	void stopPlayback();
@@ -71,8 +104,6 @@ private:
 	void sliderValueChanged(Slider *sliderThatWasChanged) override;
 	void oscMessageReceived(const OSCMessage& message) override;
 	void updateTransportSlider(bool updateLoop);
-	void updateClientRatingSliders();
-	void updateClientTransportSlider();
 	void updateRatingSliders();
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MushraComponent)

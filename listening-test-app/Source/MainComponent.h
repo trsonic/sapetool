@@ -4,41 +4,28 @@
 #include "OscTransceiver.h"
 #include "MushraComponent.h"
 #include "SampleRegion.h"
-#include "LocComponent.h"
 
 
-//==============================================================================
-/*
-    This component lives inside our window, and this is where you should put all
-    your controls and content.
-*/
 class MainComponent   : public Component,
-						public Button::Listener,
 						public OSCReceiver,
 						public OSCReceiver::Listener<OSCReceiver::MessageLoopCallback>,
                         public Timer
 {
 public:
-    //==============================================================================
     MainComponent();
     ~MainComponent();
 
-    //==============================================================================
     void paint (Graphics&) override;
     void resized() override;
 
-
 private:
 	// GUI
-	Label hostIpLabel;
 	Label dawTxIpLabel, dawTxPortLabel, dawRxPortLabel;
-	Label clientTxIpLabel, clientTxPortLabel, clientRxPortLabel;
-	ToggleButton mushraToggleButton, localizationToggleButton;
-	TextButton talkToDawButton, initGuiButton;
+	TextButton getTracksAndMarkersFromDawButton, initGuiButton;
+	OwnedArray<ToggleButton> testTypeSelectionButtons;
 	TextButton saveResultsButton;
-	TextButton initClientGuiButton;
-	String dawIp, clientIp, hostIp;
-	int dawTxPort, dawRxPort, clientTxPort, clientRxPort;
+	String dawIp;
+	int dawTxPort, dawRxPort;
 
     oscTransceiver dawTx, dawRx;
     
@@ -63,19 +50,13 @@ private:
     MushraComponent mc;
     bool mushraComponentConnected = false;
 
-	// Method of Adjustment COMPONENT
-	LocComponent lc;
-	bool locComponentConnected = false;
-
 	bool dawReady = false;
 
 	// METHODS
-	void buttonClicked(Button* buttonThatWasClicked) override;
 	void oscMessageReceived(const OSCMessage& message) override;
     virtual void timerCallback() override;
 	void getTracksAndMarkersFromDaw();
-	void configureMushra(), configureLoc();
-	void removeGuiInitButton();
+	void launchTest();
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };
