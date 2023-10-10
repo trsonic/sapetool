@@ -24,7 +24,7 @@ public:
 	void resized() override;
 
 	enum TestType {
-		standardMushra, externalisation, degreeOfLiking
+		standardMushra, externalisation, degreeOfLiking, naturalness
 	};
 
 	void setupRatingLabels(TestType type)
@@ -43,6 +43,10 @@ public:
 		case MushraComponent::degreeOfLiking:
 			testTypeText = "Degree of Liking: Rate how much you like or dislike the scene based on its overall pleasantness or unpleasantness.";
 			ratingScaleLabels = { "Strongly Like", "Like", "Neutral", "Dislike", "Strongly Dislike" };
+			break;
+		case MushraComponent::naturalness:
+			testTypeText = "naturalness";
+			ratingScaleLabels = { "Strongly Natural", "Natural", "Neutral", "Dislike", "Strongly Dislike" };
 			break;
 		default:
 			break;
@@ -79,6 +83,7 @@ private:
 	bool playback = false;
 	bool loop = true;
 	Label dawTimeLabel, sampleTimeLabel;
+	bool showInfo = false;
 
 	// test type specific text
 	String testTypeText;
@@ -93,6 +98,7 @@ private:
 	OwnedArray<Button> playSampleButtonArray;
 	Slider loopSlider;
 	ToggleButton loopTB;
+	ToggleButton showInfoTB;
 	
 	// METHODS
 
@@ -105,6 +111,7 @@ private:
 	void oscMessageReceived(const OSCMessage& message) override;
 	void updateTransportSlider(bool updateLoop);
 	void updateRatingSliders();
+	void updatePrevNextButtons();
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MushraComponent)
 };

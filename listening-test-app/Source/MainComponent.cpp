@@ -7,7 +7,7 @@ MainComponent::MainComponent()
 	getTracksAndMarkersFromDawButton.onClick = [this] { getTracksAndMarkersFromDaw(); };
 	addAndMakeVisible(getTracksAndMarkersFromDawButton);
 
-	StringArray testTypes= { "Mushra", "Externalisation", "Degree of Liking" };
+	StringArray testTypes= { "Mushra", "Externalisation", "Degree of Liking", "Naturalness"};
 
 	for ( auto test : testTypes)
 {
@@ -237,6 +237,7 @@ void MainComponent::launchTest()
 	if (testTypeSelectionButtons[0]->getToggleState()) typeToLaunch = MushraComponent::TestType::standardMushra;
 	else if (testTypeSelectionButtons[1]->getToggleState()) typeToLaunch = MushraComponent::TestType::externalisation;
 	else if (testTypeSelectionButtons[2]->getToggleState()) typeToLaunch = MushraComponent::TestType::degreeOfLiking;
+	else if (testTypeSelectionButtons[3]->getToggleState()) typeToLaunch = MushraComponent::TestType::naturalness;
 	else return; // no test type selected
 
 	mc.setupRatingLabels(typeToLaunch);

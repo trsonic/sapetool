@@ -24,12 +24,15 @@ void MushraComponent::paint (Graphics& g)
     g.setColour (Colours::black);
 	g.drawText(testTypeText, 25, 10, getWidth() - 25, 30, Justification::centred, true);
 	g.setFont(Font(14.0f));
-    g.drawText("Trial: " + String(currentTrialIndex + 1) + " of " + String(regionArray.size()), 390, 680, 200, 20, Justification::centredLeft, true);
-	g.drawText("Region: " + String(currentRegion + 1) + " of " + String(regionArray.size()), 390, 700, 200, 20, Justification::centredLeft, true);
-	g.drawText("Sample: " + String(currentTrack + 1) + " of " + String(numberOfSamplesPerRegion), 390, 720, 200, 20, Justification::centredLeft, true);
-    g.drawText("Start: " + String(regionArray[currentRegion]->dawStartTime), 545, 700, 200, 20, Justification::centredLeft, true);
-    g.drawText("Stop: " + String(regionArray[currentRegion]->dawStopTime), 545, 720, 200, 20, Justification::centredLeft, true);
 
+	if (showInfo)
+	{
+		g.drawText("Trial: " + String(currentTrialIndex + 1) + " of " + String(regionArray.size()), 390, 680, 200, 20, Justification::centredLeft, true);
+		g.drawText("Region: " + String(currentRegion + 1) + " of " + String(regionArray.size()), 390, 700, 200, 20, Justification::centredLeft, true);
+		g.drawText("Sample: " + String(currentTrack + 1) + " of " + String(numberOfSamplesPerRegion), 390, 720, 200, 20, Justification::centredLeft, true);
+		g.drawText("Start: " + String(regionArray[currentRegion]->dawStartTime), 545, 700, 200, 20, Justification::centredLeft, true);
+		g.drawText("Stop: " + String(regionArray[currentRegion]->dawStopTime), 545, 720, 200, 20, Justification::centredLeft, true);
+	}
 
 	int linesStartX = 125;
 	int linesEndX = 925;
@@ -149,6 +152,14 @@ void MushraComponent::createGui()
 	loopTB.setColour(ToggleButton::tickDisabledColourId, Colours::black);
 	addAndMakeVisible(loopTB);
 
+	showInfoTB.setButtonText("Info");
+	showInfoTB.setToggleState(showInfo, dontSendNotification);
+	showInfoTB.addListener(this);
+	showInfoTB.setColour(ToggleButton::textColourId, Colours::black);
+	showInfoTB.setColour(ToggleButton::tickColourId, Colours::black);
+	showInfoTB.setColour(ToggleButton::tickDisabledColourId, Colours::black);
+	addAndMakeVisible(showInfoTB);
+
 	stopPlaybackB.setButtonText("Stop");
 	stopPlaybackB.addListener(this);
 	addAndMakeVisible(stopPlaybackB);
@@ -168,6 +179,7 @@ void MushraComponent::createGui()
 	addAndMakeVisible(sampleTimeLabel);
 
 	updateTransportSlider(true);
+	updatePrevNextButtons();
 
 	resized();
 }
@@ -186,8 +198,8 @@ void MushraComponent::connectOsc(String dawIp, int dawTxPort, int dawRxPort)
 
 void MushraComponent::resized()
 {
-	auto rateRectWidth = 0.8 * getWidth();
-	auto rateRectHeight = 0.6 * getHeight();
+	auto rateRectWidth = 0.8f * getWidth();
+	auto rateRectHeight = 0.6f * getHeight();
 	
 	auto sliderSpacing = rateRectWidth / (numberOfSamplesPerRegion + 1);
 	
@@ -200,8 +212,8 @@ void MushraComponent::resized()
 
 
 	auto sliderPositionX = (getWidth() - rateRectWidth) / 2 + sliderWidth / 2;
-	auto sliderPositionY = 0.06 * getHeight() + sliderHeight / 2;
-	auto labelPositionY = sliderPositionY + sliderHeight / 2 + labelHeight * 0.5;
+	auto sliderPositionY = 0.06f * getHeight() + sliderHeight / 2;
+	auto labelPositionY = sliderPositionY + sliderHeight / 2 + labelHeight * 0.5f;
 	auto buttonPositionY = sliderPositionY + sliderHeight / 2 + buttonHeight;
 
 	for (int i = 0; i < numberOfSamplesPerRegion; ++i)
@@ -219,7 +231,8 @@ void MushraComponent::resized()
 	stopPlaybackB.setBounds(25, buttonPositionY + buttonHeight, 80, buttonHeight);
 	loopSlider.setBounds(sliderPositionX, buttonPositionY + buttonHeight, rateRectWidth, labelHeight);
 
-	loopTB.setBounds(0.8 * getWidth(), 0.875 * getHeight(), 80, labelHeight);
+	loopTB.setBounds(0.8 * getWidth(), 0.875f * getHeight(), 80, labelHeight);
+	showInfoTB.setBounds(getWidth() - 80, getHeight() - labelHeight, 80, labelHeight);
 	goToPrevious.setBounds(sliderPositionX, buttonPositionY + 2 * buttonHeight, 100, labelHeight);
 	goToNext.setBounds(sliderPositionX + 125, buttonPositionY + 2 * buttonHeight, 100, labelHeight);
 
@@ -247,6 +260,10 @@ void MushraComponent::buttonClicked (Button* buttonThatWasClicked)
 	{
 		loop = loopTB.getToggleState();
 	}
+	else if (buttonThatWasClicked == &showInfoTB)
+	{
+		showInfo = showInfoTB.getToggleState();
+	}
 	else if (buttonThatWasClicked == &goToNext)
 	{
 		if (currentTrialIndex < regionArray.size() - 1)
@@ -256,6 +273,7 @@ void MushraComponent::buttonClicked (Button* buttonThatWasClicked)
             stopPlayback();
             updateTransportSlider(true);
 			updateRatingSliders();
+			updatePrevNextButtons();
         }
 
 	}
@@ -268,6 +286,7 @@ void MushraComponent::buttonClicked (Button* buttonThatWasClicked)
 			stopPlayback();
             updateTransportSlider(true);
             updateRatingSliders();
+			updatePrevNextButtons();
         }
 	}
 	repaint();
@@ -403,6 +422,14 @@ void MushraComponent::updateRatingSliders()
         int trackNum = sampleRandomizationArray[currentRegion][i];
 		rateSampleSliderArray[i]->setValue(scoresArray[currentRegion][trackNum]);
 	}
+}
+
+void MushraComponent::updatePrevNextButtons()
+{
+	if (currentTrialIndex == regionArray.size() - 1) goToNext.setVisible(false);
+	else goToNext.setVisible(true);
+	if (currentTrialIndex == 0) goToPrevious.setVisible(false);
+	else goToPrevious.setVisible(true);
 }
 
 void MushraComponent::saveResults()
