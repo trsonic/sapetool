@@ -1,2 +1,5 @@
 listening-test-app/Builds/
 /.vs
+cmake-build-debug
+cmake-build-release
+reaper_template/Backups
