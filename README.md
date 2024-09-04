@@ -1,8 +1,12 @@
-# REAPER-MUSHRA: Listening test tool for DAW-based perceptual evaluation of spatial audio
+# SAPETOOL: Listening test tool for DAW-based perceptual evaluation of spatial audio
 
 This repository contains source code of REAPER-MUSHRA - a listening test app designed for running MUSHRA-like evaluations using [REAPER](https://reaper.fm) and real-time spatial audio rendering. The app can be used for perceptual evaluation of spatial audio codecs, binaural rendering algorithms, virtual acoustics, etc.
 
-The initial release of this software has been described in the 145th AES Convention [Engineering Brief 465](https://www.aes.org/e-lib/browse.cfm?elib=19730).
+The app has a bit of ugly UI, but has proven to be useful many times.
+
+![alt text](SAPETOOL_UI.png "User Interface")
+
+The initial release of this software has been described in this [Engineering Brief](https://www.aes.org/e-lib/browse.cfm?elib=19730).
 
 ## Key features
 - Implemented MUSHRA [1] test paradigm.
@@ -32,8 +36,9 @@ To enable OSC communication between the app and REAPER add a generic OSC device.
 ## Usage
 - Import test audio samples to Reaper.
 - Set up the required signal processing chain.
-- Launch the Main Listening Test App.
-- Configuration of the listening test app will be done automatically based on the DAW session structure.
+- Build the app. Releases currently not available.
+- Launch the `sapetool` binary.
+- Configuration of the listening test app will be done automatically based on the DAW session structure, once `Get DAW Configuration` button is clicked.
 - Conduct the test and save the results into a text file.
 
 ## References

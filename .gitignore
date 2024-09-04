@@ -3,3 +3,4 @@ listening-test-app/Builds/
 cmake-build-debug
 cmake-build-release
 reaper_template/Backups
+.idea
