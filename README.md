@@ -43,3 +43,6 @@ To enable OSC communication between the app and REAPER add a generic OSC device.
 
 ## References
 [1] *ITU-R, “BS.1534-3: Method for the subjective assessment of intermediate quality levels of coding systems,” 2015.*
+
+## License
+This project's own source code is licensed under the MIT License (see [`LICENSE`](LICENSE)). It depends on [JUCE](https://github.com/juce-framework/JUCE), which is a separate project distributed under its own license (GPLv3/AGPLv3 or a commercial license). Distributing compiled binaries that link JUCE must comply with JUCE's licensing terms.
