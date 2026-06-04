@@ -1,5 +1,7 @@
 # SAPETOOL: Listening test tool for DAW-based perceptual evaluation of spatial audio
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 This repository contains source code of SAPETOOL - a listening test app designed for running MUSHRA-like evaluations using [REAPER](https://reaper.fm) and real-time spatial audio rendering. The app can be used for perceptual evaluation of spatial audio codecs, binaural rendering algorithms, virtual acoustics, etc.
 
 The app has a bit of ugly UI, but has proven to be useful many times.
